@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { siteConfig } from '@/lib/siteConfig'
-import type { SiteSettings } from '@/sanity.types'
+import type { SiteSettings, ServiceCategory } from '@/sanity.types'
 
-type Props = { settings: SiteSettings | null }
+type Props = { settings: SiteSettings | null; categories?: ServiceCategory[] }
 
-export function SiteFooter({ settings }: Props) {
+export function SiteFooter({ settings, categories }: Props) {
   const year    = new Date().getFullYear()
   const phone   = settings?.phone   ?? siteConfig.contact.phone
   const email   = settings?.email   ?? siteConfig.contact.email
@@ -26,16 +26,23 @@ export function SiteFooter({ settings }: Props) {
         <div>
           <p className="font-heading font-semibold text-xs uppercase tracking-widest text-steel mb-4">Services</p>
           <ul className="space-y-2">
-            {[
-              { label: 'All Services',           href: '/services' },
-              { label: 'Commissioning',          href: '/services#commissioning-services' },
-              { label: 'Engineering Solutions',  href: '/services#engineering-solutions' },
-              { label: 'Code & Fire Safety',     href: '/services#building-code-fire-safety' },
-            ].map(({ label, href }) => (
-              <li key={href}>
-                <Link href={href} className="text-white/60 hover:text-white text-sm transition-colors">{label}</Link>
-              </li>
-            ))}
+            <li>
+              <Link href="/services" className="text-white/60 hover:text-white text-sm transition-colors">All Services</Link>
+            </li>
+            {(categories ?? []).map((cat) => {
+              const slug = cat.slug?.current
+              if (!slug) return null
+              return (
+                <li key={cat._id}>
+                  <Link
+                    href={`/services#${slug}`}
+                    className="text-white/60 hover:text-white text-sm transition-colors"
+                  >
+                    {cat.title}
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </div>
 

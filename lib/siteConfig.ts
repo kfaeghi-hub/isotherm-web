@@ -22,7 +22,6 @@ export const routes = {
   career:          "/career",
   careerDetail:    (slug: string) => `/career/${slug}`,
   contact:         "/contact",
-  blog:            "/blog",
 } as const;
 
 export const featureFlags = {

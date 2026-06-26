@@ -12,7 +12,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     <>
       <SiteHeader categories={categories} />
       <main className="flex-1">{children}</main>
-      <SiteFooter settings={settings} />
+      <SiteFooter settings={settings} categories={categories} />
     </>
   )
 }

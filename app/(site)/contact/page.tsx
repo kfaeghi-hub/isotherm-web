@@ -28,8 +28,6 @@ export default async function ContactPage() {
     address?.country,
   ].filter(Boolean).join(', ')
 
-  const mapsEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(mapsQuery)}&output=embed`
-
   return (
     <>
       {/* Header */}
@@ -89,20 +87,25 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      {/* Map */}
-      <section className="border-t border-line">
-        <div className="relative h-72 md:h-96 w-full overflow-hidden">
-          <iframe
-            title="Isotherm Engineering office location"
-            src={mapsEmbedSrc}
-            width="100%"
-            height="100%"
-            style={{ border: 0, display: 'block' }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        </div>
-      </section>
+      {/* Location footer band */}
+      {mapsQuery && (
+        <section className="border-t border-line bg-white">
+          <div className="mx-auto max-w-[1200px] px-6 py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <MapPin className="h-4 w-4 text-steel shrink-0 mt-0.5" aria-hidden="true" />
+              <p className="text-ink/60 text-sm">{mapsQuery}</p>
+            </div>
+            <a
+              href={`https://maps.google.com/maps?q=${encodeURIComponent(mapsQuery)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-steel text-steel text-sm font-medium rounded-sm hover:bg-steel hover:text-white transition-colors shrink-0"
+            >
+              View on Google Maps
+            </a>
+          </div>
+        </section>
+      )}
     </>
   )
 }
