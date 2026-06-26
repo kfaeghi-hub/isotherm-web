@@ -1,16 +1,17 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight, MapPin, Clock } from 'lucide-react'
-import { getActiveCareerPosts, getSiteSettings } from '@/lib/sanity/queries'
+import { getActiveCareerPosts } from '@/lib/sanity/queries'
 import { siteConfig } from '@/lib/siteConfig'
+import { buildMeta } from '@/lib/metadata'
 import { FadeUp } from '@/components/ui/motion'
 
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings()
-  return {
-    title:       `Careers | ${siteConfig.name}`,
-    description: 'Join the Isotherm Engineering team. We\'re looking for driven commissioning engineers and technical professionals.',
-  }
+export function generateMetadata(): Metadata {
+  return buildMeta(
+    `Careers | ${siteConfig.name}`,
+    'Join the Isotherm Engineering team. We\'re looking for driven commissioning engineers and technical professionals who want to shape building performance.',
+    { path: '/career' },
+  )
 }
 
 export default async function CareerPage() {

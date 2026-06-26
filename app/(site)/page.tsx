@@ -9,15 +9,15 @@ import {
 } from '@/lib/sanity/queries'
 import { urlFor } from '@/lib/sanity/image'
 import { siteConfig } from '@/lib/siteConfig'
+import { buildMeta } from '@/lib/metadata'
 import { FadeUp, StatCounter } from '@/components/ui/motion'
 import type { SiteSettings, ServiceCategory, Project } from '@/sanity.types'
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
-  return {
-    title:       settings?.defaultSeo?.metaTitle       ?? `${siteConfig.name} — ${siteConfig.tagline}`,
-    description: settings?.defaultSeo?.metaDescription ?? 'Independent commissioning and engineering services for high-performance buildings across Canada.',
-  }
+  const title       = settings?.defaultSeo?.metaTitle       ?? `${siteConfig.name} — ${siteConfig.tagline}`
+  const description = settings?.defaultSeo?.metaDescription ?? 'Independent commissioning and engineering services for high-performance buildings across Canada.'
+  return buildMeta(title, description, { path: '/' })
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
@@ -224,7 +224,7 @@ function FeaturedProjects({ projects }: { projects: Project[] }) {
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center bg-navy/5">
-                        <BarChart3 className="h-12 w-12 text-navy/20" />
+                        <BarChart3 aria-hidden="true" className="h-12 w-12 text-navy/20" />
                       </div>
                     )}
                     {proj.cxType && (

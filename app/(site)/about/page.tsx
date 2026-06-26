@@ -4,14 +4,15 @@ import { ArrowRight } from 'lucide-react'
 import { getPageBySlug, getSiteSettings } from '@/lib/sanity/queries'
 import { PortableText } from '@/components/ui/portable-text'
 import { siteConfig } from '@/lib/siteConfig'
+import { buildMeta } from '@/lib/metadata'
 import { FadeUp, StatCounter } from '@/components/ui/motion'
 
-export async function generateMetadata(): Promise<Metadata> {
-  const [page, settings] = await Promise.all([getPageBySlug('about'), getSiteSettings()])
-  return {
-    title:       `About | ${siteConfig.name}`,
-    description: settings?.defaultSeo?.metaDescription ?? 'Independent commissioning experts serving Canada\'s most demanding building projects.',
-  }
+export function generateMetadata(): Metadata {
+  return buildMeta(
+    `About | ${siteConfig.name}`,
+    'Isotherm Engineering is an independent commissioning authority serving Canada\'s most technically demanding building projects — data centres, healthcare, and institutional construction.',
+    { path: '/about' },
+  )
 }
 
 // ─── Geometric accent — engineering drawing motif ────────────────────────────

@@ -3,22 +3,28 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, BarChart3 } from 'lucide-react'
-import { getProjectBySlug, getSiteSettings } from '@/lib/sanity/queries'
+import { getProjectBySlug } from '@/lib/sanity/queries'
 import { PortableText } from '@/components/ui/portable-text'
 import { urlFor } from '@/lib/sanity/image'
 import { siteConfig } from '@/lib/siteConfig'
+import { buildMeta, DEFAULT_OG } from '@/lib/metadata'
 
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const proj     = await getProjectBySlug(slug)
-  const settings = await getSiteSettings()
 
-  return {
-    title:       proj?.seo?.metaTitle       ?? `${proj?.title ?? 'Project'} | ${siteConfig.name}`,
-    description: proj?.seo?.metaDescription ?? proj?.summary ?? settings?.defaultSeo?.metaDescription,
-  }
+  const title       = proj?.seo?.metaTitle       ?? `${proj?.title ?? 'Project'} | ${siteConfig.name}`
+  const description = proj?.seo?.metaDescription ?? proj?.summary ?? 'A commissioning project delivered by Isotherm Engineering.'
+
+  // Use the project's first image as the OG image when available
+  const heroImg = proj?.images?.[0]
+  const image = heroImg?.asset
+    ? { url: urlFor(heroImg).width(1200).height(630).url(), width: 1200, height: 630, alt: proj?.title ?? '' }
+    : DEFAULT_OG
+
+  return buildMeta(title, description, { path: `/portfolio/${slug}`, image })
 }
 
 const CX_LABELS: Record<string, string> = {
@@ -56,7 +62,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         ) : (
           <div className="h-40 flex items-center justify-center">
-            <BarChart3 className="h-16 w-16 text-white/10" />
+            <BarChart3 aria-hidden="true" className="h-16 w-16 text-white/10" />
           </div>
         )}
         {/* Title overlay */}

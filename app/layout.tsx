@@ -15,9 +15,20 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://isothermengineering.com"),
   title: "Isotherm Engineering",
   description:
-    "Commissioning and engineering solutions for high-performance buildings.",
+    "Independent commissioning and engineering services for high-performance buildings across Canada.",
+  openGraph: {
+    siteName: "Isotherm Engineering",
+    locale:   "en_CA",
+    type:     "website",
+    images:   [{ url: "/opengraph-image", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card:   "summary_large_image",
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function RootLayout({

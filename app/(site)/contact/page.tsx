@@ -3,13 +3,15 @@ import { MapPin, Phone, Mail } from 'lucide-react'
 import { getSiteSettings } from '@/lib/sanity/queries'
 import { ContactForm } from '@/components/forms/ContactForm'
 import { siteConfig } from '@/lib/siteConfig'
+import { buildMeta } from '@/lib/metadata'
 import { FadeUp } from '@/components/ui/motion'
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title:       `Contact | ${siteConfig.name}`,
-    description: 'Reach Isotherm Engineering — building commissioning and engineering consultants in Richmond Hill, Ontario.',
-  }
+export function generateMetadata(): Metadata {
+  return buildMeta(
+    `Contact | ${siteConfig.name}`,
+    'Reach Isotherm Engineering — building commissioning and engineering consultants based in Richmond Hill, Ontario. Contact us to discuss your project.',
+    { path: '/contact' },
+  )
 }
 
 export default async function ContactPage() {

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { getServiceCategories, getServices, getSiteSettings } from '@/lib/sanity/queries'
 import { siteConfig } from '@/lib/siteConfig'
+import { buildMeta } from '@/lib/metadata'
 import { FadeUp } from '@/components/ui/motion'
 import type { ServiceCategory } from '@/sanity.types'
 
@@ -15,12 +16,12 @@ type ServiceWithCategory = {
   category?: ServiceCategory
 }
 
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings()
-  return {
-    title:       `Services | ${siteConfig.name}`,
-    description: settings?.defaultSeo?.metaDescription ?? 'Our full range of building commissioning and engineering services.',
-  }
+export function generateMetadata(): Metadata {
+  return buildMeta(
+    `Services | ${siteConfig.name}`,
+    'Commissioning services, engineering solutions, and building code compliance — delivered by an independent commissioning authority.',
+    { path: '/services' },
+  )
 }
 
 export default async function ServicesPage() {

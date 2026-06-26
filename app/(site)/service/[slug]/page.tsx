@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { getServiceBySlug, getSiteSettings } from '@/lib/sanity/queries'
+import { getServiceBySlug } from '@/lib/sanity/queries'
 import { PortableText } from '@/components/ui/portable-text'
 import { siteConfig } from '@/lib/siteConfig'
+import { buildMeta } from '@/lib/metadata'
 import type { ServiceCategory } from '@/sanity.types'
 
 type ServiceWithCategory = {
@@ -22,12 +23,11 @@ type Props = { params: Promise<{ slug: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const svc      = await getServiceBySlug(slug) as unknown as ServiceWithCategory | null
-  const settings = await getSiteSettings()
 
-  return {
-    title:       svc?.seo?.metaTitle       ?? `${svc?.title ?? 'Service'} | ${siteConfig.name}`,
-    description: svc?.seo?.metaDescription ?? settings?.defaultSeo?.metaDescription,
-  }
+  const title       = svc?.seo?.metaTitle       ?? `${svc?.title ?? 'Service'} | ${siteConfig.name}`
+  const description = svc?.seo?.metaDescription ?? svc?.excerpt ?? 'A commissioning and engineering service provided by Isotherm Engineering.'
+
+  return buildMeta(title, description, { path: `/service/${slug}` })
 }
 
 export default async function ServiceDetailPage({ params }: Props) {

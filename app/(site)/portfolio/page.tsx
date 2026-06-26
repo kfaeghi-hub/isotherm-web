@@ -1,14 +1,15 @@
 import type { Metadata } from 'next'
-import { getProjects, getSiteSettings } from '@/lib/sanity/queries'
+import { getProjects } from '@/lib/sanity/queries'
 import { PortfolioGrid } from '@/components/portfolio/PortfolioGrid'
 import { siteConfig } from '@/lib/siteConfig'
+import { buildMeta } from '@/lib/metadata'
 
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings()
-  return {
-    title:       `Portfolio | ${siteConfig.name}`,
-    description: settings?.defaultSeo?.metaDescription ?? 'Our commissioning and engineering project portfolio — across data centres, healthcare, education and mixed-use developments.',
-  }
+export function generateMetadata(): Metadata {
+  return buildMeta(
+    `Portfolio | ${siteConfig.name}`,
+    'Commissioned projects across data centres, healthcare, education and mixed-use developments — delivered by Isotherm Engineering.',
+    { path: '/portfolio' },
+  )
 }
 
 export default async function PortfolioPage() {

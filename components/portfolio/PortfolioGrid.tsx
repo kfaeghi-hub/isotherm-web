@@ -83,7 +83,7 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <BarChart3 className="h-12 w-12 text-navy/15" />
+                          <BarChart3 aria-hidden="true" className="h-12 w-12 text-navy/15" />
                         </div>
                       )}
                       {proj.cxType && (

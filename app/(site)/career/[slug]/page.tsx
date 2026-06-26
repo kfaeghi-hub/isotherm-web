@@ -2,10 +2,11 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, MapPin, Clock, Calendar } from 'lucide-react'
-import { getCareerPostBySlug, getSiteSettings } from '@/lib/sanity/queries'
+import { getCareerPostBySlug } from '@/lib/sanity/queries'
 import { PortableText } from '@/components/ui/portable-text'
 import { ApplicationForm } from '@/components/forms/ApplicationForm'
 import { siteConfig } from '@/lib/siteConfig'
+import { buildMeta } from '@/lib/metadata'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -13,10 +14,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const post     = await getCareerPostBySlug(slug)
 
-  return {
-    title:       post?.title ? `${post.title} | ${siteConfig.name}` : `Career | ${siteConfig.name}`,
-    description: `${post?.title ?? 'Open position'} at Isotherm Engineering — ${post?.location ?? 'Canada'}.`,
-  }
+  const title       = post?.title ? `${post.title} | ${siteConfig.name}` : `Career | ${siteConfig.name}`
+  const description = `${post?.title ?? 'Open position'} at Isotherm Engineering${post?.location ? ` — ${post.location}` : ''}. Join a technically rigorous independent commissioning team.`
+
+  return buildMeta(title, description, { path: `/career/${slug}` })
 }
 
 export default async function CareerDetailPage({ params }: Props) {
