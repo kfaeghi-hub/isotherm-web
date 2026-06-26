@@ -1,4 +1,4 @@
-import createImageUrlBuilder from '@sanity/image-url'
+import { createImageUrlBuilder } from '@sanity/image-url'
 
 const builder = createImageUrlBuilder({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,

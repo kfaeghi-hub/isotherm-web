@@ -1,0 +1,307 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import Image from 'next/image'
+import { ArrowRight, Shield, Zap, Leaf, BarChart3, CheckCircle2 } from 'lucide-react'
+import {
+  getSiteSettings,
+  getServiceCategories,
+  getFeaturedProjects,
+} from '@/lib/sanity/queries'
+import { urlFor } from '@/lib/sanity/image'
+import { siteConfig } from '@/lib/siteConfig'
+import type { SiteSettings, ServiceCategory, Project } from '@/sanity.types'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings()
+  return {
+    title:       settings?.defaultSeo?.metaTitle       ?? `${siteConfig.name} — ${siteConfig.tagline}`,
+    description: settings?.defaultSeo?.metaDescription ?? 'Independent commissioning and engineering services for high-performance buildings across Canada.',
+  }
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+
+function Hero({ tagline }: { tagline: string }) {
+  return (
+    <section className="bg-navy text-white">
+      <div className="mx-auto max-w-[1200px] px-6 py-24 md:py-32 lg:py-40">
+        <div className="max-w-3xl">
+          <p className="text-steel text-sm font-semibold uppercase tracking-widest mb-6">
+            Commissioning · Engineering · Compliance
+          </p>
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight mb-8">
+            {tagline}
+          </h1>
+          <p className="text-white/70 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl">
+            Isotherm Engineering delivers independent, technically rigorous commissioning and
+            engineering services for data centres, institutional buildings, healthcare
+            facilities, and complex mixed-use developments across Canada.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-steel text-white font-medium rounded-sm hover:bg-steel/90 transition-colors"
+            >
+              Request a Commissioning Consultation
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 px-6 py-3 border border-white/30 text-white font-medium rounded-sm hover:border-white/60 hover:bg-white/5 transition-colors"
+            >
+              Our Services
+            </Link>
+          </div>
+        </div>
+      </div>
+      {/* Structural accent line */}
+      <div className="h-1 bg-gradient-to-r from-steel/60 via-steel to-steel/60" />
+    </section>
+  )
+}
+
+// ─── Trust Strip ──────────────────────────────────────────────────────────────
+
+const TRUST_ITEMS = [
+  { icon: Shield,    title: 'Comprehensive Commissioning',  body: 'Full-cycle Cx from design review through post-occupancy, to Owner Project Requirements.' },
+  { icon: CheckCircle2, title: 'Quality Assurance',       body: 'Independent verification that every system performs as designed and installed.' },
+  { icon: Leaf,      title: 'Sustainable Practices',       body: 'Commissioning that supports LEED, energy efficiency targets, and carbon reduction goals.' },
+  { icon: Zap,       title: 'Energy Efficiency',           body: 'Identifying operational savings and optimizing building performance for the life of the asset.' },
+]
+
+function TrustStrip() {
+  return (
+    <section className="bg-paper border-b border-line">
+      <div className="mx-auto max-w-[1200px] px-6 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {TRUST_ITEMS.map(({ icon: Icon, title, body }) => (
+          <div key={title} className="flex flex-col gap-3">
+            <div className="w-10 h-10 rounded-sm bg-navy/5 flex items-center justify-center shrink-0">
+              <Icon className="h-5 w-5 text-steel" />
+            </div>
+            <div>
+              <p className="font-heading font-semibold text-navy text-sm mb-1">{title}</p>
+              <p className="text-ink/60 text-sm leading-relaxed">{body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// ─── Services Overview ────────────────────────────────────────────────────────
+
+function ServicesOverview({ categories }: { categories: ServiceCategory[] }) {
+  if (!categories.length) return null
+  return (
+    <section className="bg-white">
+      <div className="mx-auto max-w-[1200px] px-6 py-20">
+        <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <p className="text-steel text-xs font-semibold uppercase tracking-widest mb-3">What We Do</p>
+            <h2 className="font-heading text-3xl md:text-4xl font-semibold text-navy">Our Services</h2>
+          </div>
+          <Link href="/services" className="text-steel text-sm font-medium hover:underline underline-offset-4 shrink-0">
+            View all services →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {categories.map((cat, i) => (
+            <Link
+              key={cat._id}
+              href={`/services#${cat.slug?.current ?? ''}`}
+              className="group flex flex-col border border-line rounded-sm p-8 hover:border-steel hover:shadow-md transition-all bg-paper"
+            >
+              <span className="text-steel/50 font-heading text-4xl font-bold mb-6 leading-none">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <h3 className="font-heading font-semibold text-navy text-lg mb-3">{cat.title}</h3>
+              <p className="text-ink/60 text-sm leading-relaxed flex-1">{cat.shortDescription}</p>
+              <span className="mt-6 text-steel text-sm font-medium group-hover:gap-3 inline-flex items-center gap-2 transition-all">
+                Learn more <ArrowRight className="h-4 w-4" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Approach ─────────────────────────────────────────────────────────────────
+
+const APPROACH_STEPS = [
+  { n: '01', title: 'Define Objectives',    body: 'We establish the Owner Project Requirements and Basis of Design — the benchmark every system is tested against.' },
+  { n: '02', title: 'Develop Strategies',   body: 'A detailed commissioning plan and issue log are created, ensuring every trade and system is covered before construction.' },
+  { n: '03', title: 'Implement & Verify',   body: 'Functional performance testing, final reporting, and post-occupancy follow-up confirm lasting system performance.' },
+]
+
+function ApproachSection() {
+  return (
+    <section className="bg-paper">
+      <div className="mx-auto max-w-[1200px] px-6 py-20">
+        <div className="mb-12">
+          <p className="text-steel text-xs font-semibold uppercase tracking-widest mb-3">How We Work</p>
+          <h2 className="font-heading text-3xl md:text-4xl font-semibold text-navy">Our Approach</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          {/* Connector line (desktop) */}
+          <div className="hidden md:block absolute top-8 left-[16.7%] right-[16.7%] h-px bg-line" />
+          {APPROACH_STEPS.map(({ n, title, body }) => (
+            <div key={n} className="relative flex flex-col gap-5">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full border-2 border-steel bg-white flex items-center justify-center shrink-0 z-10">
+                  <span className="font-heading font-bold text-steel text-sm">{n}</span>
+                </div>
+              </div>
+              <div>
+                <h3 className="font-heading font-semibold text-navy text-lg mb-2">{title}</h3>
+                <p className="text-ink/60 text-sm leading-relaxed">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Stats Band ───────────────────────────────────────────────────────────────
+
+function StatsSection({ settings }: { settings: SiteSettings | null }) {
+  const stats = settings?.stats
+  if (!stats?.length) return null
+  return (
+    <section className="bg-navy text-white">
+      <div className="mx-auto max-w-[1200px] px-6 py-16 grid grid-cols-2 md:grid-cols-4 gap-8">
+        {stats.map((stat) => (
+          <div key={stat._key} className="text-center">
+            <p className="font-heading text-4xl md:text-5xl font-bold text-steel mb-2">{stat.value}</p>
+            <p className="text-white/60 text-sm leading-snug">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// ─── Featured Projects ────────────────────────────────────────────────────────
+
+const CX_TYPE_LABELS: Record<string, string> = {
+  NCx:             'New Construction Cx',
+  EBCx:            'Existing Building Cx',
+  RCx:             'Retro-Cx',
+  OCx:             'Ongoing Cx',
+  Recommissioning: 'Recommissioning',
+  IST:             'Integrated Systems Testing',
+}
+
+function FeaturedProjects({ projects }: { projects: Project[] }) {
+  if (!projects.length) return null
+  return (
+    <section className="bg-white">
+      <div className="mx-auto max-w-[1200px] px-6 py-20">
+        <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <p className="text-steel text-xs font-semibold uppercase tracking-widest mb-3">Selected Work</p>
+            <h2 className="font-heading text-3xl md:text-4xl font-semibold text-navy">Featured Projects</h2>
+          </div>
+          <Link href="/portfolio" className="text-steel text-sm font-medium hover:underline underline-offset-4 shrink-0">
+            View all projects →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.slice(0, 6).map((proj) => {
+            const img = (proj.images as unknown as { asset?: unknown }[] | undefined)?.[0]
+            return (
+              <Link
+                key={proj._id}
+                href={`/portfolio/${proj.slug?.current ?? proj._id}`}
+                className="group flex flex-col border border-line rounded-sm overflow-hidden hover:border-steel hover:shadow-md transition-all bg-paper"
+              >
+                {/* Image or placeholder */}
+                <div className="relative aspect-[4/3] bg-navy/10 overflow-hidden">
+                  {img?.asset ? (
+                    <Image
+                      src={urlFor(img).width(600).height(450).url()}
+                      alt={proj.title ?? ''}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-navy/5">
+                      <BarChart3 className="h-12 w-12 text-navy/20" />
+                    </div>
+                  )}
+                  {proj.cxType && (
+                    <div className="absolute top-3 left-3">
+                      <span className="inline-block px-2 py-0.5 bg-navy/90 text-white text-xs font-medium rounded-sm">
+                        {proj.cxType}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-5 flex flex-col gap-2 flex-1">
+                  <p className="font-heading font-semibold text-navy text-sm leading-snug">{proj.title}</p>
+                  {proj.client && <p className="text-ink/50 text-xs">{proj.client}</p>}
+                  {proj.summary && (
+                    <p className="text-ink/60 text-xs leading-relaxed line-clamp-2">{proj.summary}</p>
+                  )}
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── CTA Band ─────────────────────────────────────────────────────────────────
+
+function CTABand() {
+  return (
+    <section className="bg-steel text-white">
+      <div className="mx-auto max-w-[1200px] px-6 py-16 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div>
+          <h2 className="font-heading text-2xl md:text-3xl font-semibold mb-2">
+            Connect With Our Commissioning Experts
+          </h2>
+          <p className="text-white/80 text-sm leading-relaxed">
+            Whether you have a project in design, an existing building underperforming, or a
+            compliance question — we can help.
+          </p>
+        </div>
+        <Link
+          href="/contact"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-white text-navy font-semibold rounded-sm hover:bg-white/90 transition-colors shrink-0"
+        >
+          Request a Consultation
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+    </section>
+  )
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default async function HomePage() {
+  const [settings, categories, featuredProjects] = await Promise.all([
+    getSiteSettings(),
+    getServiceCategories(),
+    getFeaturedProjects(),
+  ])
+
+  return (
+    <>
+      <Hero tagline={siteConfig.tagline} />
+      <TrustStrip />
+      <ServicesOverview categories={categories} />
+      <ApproachSection />
+      <StatsSection settings={settings} />
+      <FeaturedProjects projects={featuredProjects} />
+      <CTABand />
+    </>
+  )
+}
