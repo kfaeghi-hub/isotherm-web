@@ -6,6 +6,7 @@ import { getPageBySlug, getTeam, getSiteSettings } from '@/lib/sanity/queries'
 import { PortableText } from '@/components/ui/portable-text'
 import { urlFor } from '@/lib/sanity/image'
 import { siteConfig } from '@/lib/siteConfig'
+import { FadeUp } from '@/components/ui/motion'
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, settings] = await Promise.all([getPageBySlug('about'), getSiteSettings()])
@@ -91,13 +92,13 @@ export default async function AboutPage() {
       {team.length > 0 && (
         <section className="bg-white border-t border-line">
           <div className="mx-auto max-w-[1200px] px-6 py-16 md:py-20">
-            <div className="mb-12">
+            <FadeUp className="mb-12">
               <p className="text-steel text-xs font-semibold uppercase tracking-widest mb-3">The People</p>
               <h2 className="font-heading text-3xl font-semibold text-navy">Our Team</h2>
-            </div>
+            </FadeUp>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-              {team.map((member) => (
-                <div key={member._id} className="flex flex-col gap-3">
+              {team.map((member, i) => (
+                <FadeUp key={member._id} delay={i * 0.06} className="flex flex-col gap-3">
                   <div className="relative aspect-square rounded-sm overflow-hidden bg-navy/10">
                     {member.photo?.asset ? (
                       <Image
@@ -119,7 +120,7 @@ export default async function AboutPage() {
                     {member.role && <p className="text-ink/50 text-xs mt-0.5">{member.role}</p>}
                     {member.bio && <p className="text-ink/60 text-xs leading-relaxed mt-2">{member.bio}</p>}
                   </div>
-                </div>
+                </FadeUp>
               ))}
             </div>
           </div>

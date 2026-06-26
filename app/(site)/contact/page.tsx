@@ -3,6 +3,7 @@ import { MapPin, Phone, Mail } from 'lucide-react'
 import { getSiteSettings } from '@/lib/sanity/queries'
 import { ContactForm } from '@/components/forms/ContactForm'
 import { siteConfig } from '@/lib/siteConfig'
+import { FadeUp } from '@/components/ui/motion'
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -45,13 +46,13 @@ export default async function ContactPage() {
       <section className="bg-paper">
         <div className="mx-auto max-w-[1200px] px-6 py-16 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-12">
           {/* Form */}
-          <div>
+          <FadeUp>
             <h2 className="font-heading text-xl font-semibold text-navy mb-6">Send us a message</h2>
             <ContactForm />
-          </div>
+          </FadeUp>
 
           {/* Contact details */}
-          <div className="flex flex-col gap-6">
+          <FadeUp delay={0.1} className="flex flex-col gap-6">
             <div className="bg-white border border-line rounded-sm p-6 space-y-5">
               <h2 className="font-heading font-semibold text-navy text-base">Office</h2>
 
@@ -82,7 +83,7 @@ export default async function ContactPage() {
               <p className="text-ink/60 text-sm">Monday – Friday: 8:30 AM – 5:00 PM ET</p>
               <p className="text-ink/40 text-xs">We respond to all inquiries within one business day.</p>
             </div>
-          </div>
+          </FadeUp>
         </div>
       </section>
 

@@ -152,3 +152,17 @@
     font-family: var(--font-inter-tight), var(--font-inter), ui-sans-serif, sans-serif;
   }
 }
+
+/* ─── Hero entrance animation (CSS — no JS required, reduced-motion safe) ─── */
+@keyframes iso-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.iso-hero-enter {
+  animation: iso-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iso-hero-enter { animation: none; }
+}

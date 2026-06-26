@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowRight, MapPin, Clock } from 'lucide-react'
 import { getActiveCareerPosts, getSiteSettings } from '@/lib/sanity/queries'
 import { siteConfig } from '@/lib/siteConfig'
+import { FadeUp } from '@/components/ui/motion'
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
@@ -51,7 +52,7 @@ export default async function CareerPage() {
                 <Link
                   key={post._id}
                   href={`/career/${post.slug?.current ?? post._id}`}
-                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-line rounded-sm p-6 hover:border-steel hover:shadow-md transition-all"
+                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-line rounded-sm p-6 hover:border-steel hover:shadow-md hover:-translate-y-px transition-all"
                 >
                   <div className="flex flex-col gap-2">
                     <h2 className="font-heading font-semibold text-navy text-base group-hover:text-steel transition-colors">
@@ -84,18 +85,20 @@ export default async function CareerPage() {
       {/* Values band */}
       <section className="bg-white border-t border-line">
         <div className="mx-auto max-w-[1200px] px-6 py-16">
-          <p className="text-steel text-xs font-semibold uppercase tracking-widest mb-4">Why Isotherm</p>
-          <h2 className="font-heading text-2xl md:text-3xl font-semibold text-navy mb-10">What it's like to work here</h2>
+          <FadeUp className="mb-10">
+            <p className="text-steel text-xs font-semibold uppercase tracking-widest mb-4">Why Isotherm</p>
+            <h2 className="font-heading text-2xl md:text-3xl font-semibold text-navy">What it's like to work here</h2>
+          </FadeUp>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { title: 'Technical depth',    body: 'You\'ll work on complex, high-stakes building systems across data centres, hospitals, and institutional buildings — not cookie-cutter projects.' },
-              { title: 'Small team culture', body: 'Everyone\'s work is visible and valued. You\'ll collaborate directly with senior commissioning authorities on every project.' },
+              { title: 'Technical depth',     body: 'You\'ll work on complex, high-stakes building systems across data centres, hospitals, and institutional buildings — not cookie-cutter projects.' },
+              { title: 'Small team culture',  body: 'Everyone\'s work is visible and valued. You\'ll collaborate directly with senior commissioning authorities on every project.' },
               { title: 'Owner-first mindset', body: 'We work for the owner, not the contractor. That independence shapes everything — from how we write reports to how we hold trades accountable.' },
-            ].map(({ title, body }) => (
-              <div key={title} className="border-t-2 border-steel pt-5">
+            ].map(({ title, body }, i) => (
+              <FadeUp key={title} delay={i * 0.06} className="border-t-2 border-steel pt-5">
                 <h3 className="font-heading font-semibold text-navy text-base mb-2">{title}</h3>
                 <p className="text-ink/60 text-sm leading-relaxed">{body}</p>
-              </div>
+              </FadeUp>
             ))}
           </div>
         </div>

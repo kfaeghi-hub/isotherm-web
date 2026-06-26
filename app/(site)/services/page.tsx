@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { getServiceCategories, getServices, getSiteSettings } from '@/lib/sanity/queries'
 import { siteConfig } from '@/lib/siteConfig'
+import { FadeUp } from '@/components/ui/motion'
 import type { ServiceCategory } from '@/sanity.types'
 
 // GROQ `category->` populates the reference inline at runtime
@@ -57,33 +58,34 @@ export default async function ServicesPage() {
             <section key={cat._id} id={cat.slug?.current ?? cat._id} className="border-b border-line">
               <div className="mx-auto max-w-[1200px] px-6 py-16 md:py-20">
                 {/* Category header */}
-                <div className="mb-10">
+                <FadeUp className="mb-10">
                   <p className="text-steel text-xs font-semibold uppercase tracking-widest mb-3">Practice Area</p>
                   <h2 className="font-heading text-2xl md:text-3xl font-semibold text-navy mb-3">{cat.title}</h2>
                   {cat.shortDescription && (
                     <p className="text-ink/60 text-base leading-relaxed max-w-2xl">{cat.shortDescription}</p>
                   )}
-                </div>
+                </FadeUp>
 
-                {/* Service cards */}
+                {/* Service cards — staggered reveal */}
                 {catServices.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {catServices.map((svc) => (
-                      <Link
-                        key={svc._id}
-                        href={`/service/${svc.slug?.current ?? svc._id}`}
-                        className="group flex flex-col bg-white border border-line rounded-sm p-6 hover:border-steel hover:shadow-md transition-all"
-                      >
-                        <h3 className="font-heading font-semibold text-navy text-base mb-2 group-hover:text-steel transition-colors">
-                          {svc.title}
-                        </h3>
-                        {svc.excerpt && (
-                          <p className="text-ink/60 text-sm leading-relaxed flex-1">{svc.excerpt}</p>
-                        )}
-                        <span className="mt-5 inline-flex items-center gap-1.5 text-steel text-sm font-medium">
-                          Learn more <ArrowRight className="h-3.5 w-3.5" />
-                        </span>
-                      </Link>
+                    {catServices.map((svc, j) => (
+                      <FadeUp key={svc._id} delay={j * 0.06} className="flex flex-col">
+                        <Link
+                          href={`/service/${svc.slug?.current ?? svc._id}`}
+                          className="group flex flex-col flex-1 bg-white border border-line rounded-sm p-6 hover:border-steel hover:shadow-md hover:-translate-y-px transition-all"
+                        >
+                          <h3 className="font-heading font-semibold text-navy text-base mb-2 group-hover:text-steel transition-colors">
+                            {svc.title}
+                          </h3>
+                          {svc.excerpt && (
+                            <p className="text-ink/60 text-sm leading-relaxed flex-1">{svc.excerpt}</p>
+                          )}
+                          <span className="mt-5 inline-flex items-center gap-1.5 text-steel text-sm font-medium">
+                            Learn more <ArrowRight className="h-3.5 w-3.5" />
+                          </span>
+                        </Link>
+                      </FadeUp>
                     ))}
                   </div>
                 ) : (

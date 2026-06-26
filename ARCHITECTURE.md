@@ -73,7 +73,44 @@ Token reference:
 
 ---
 
-## 7. Build phases
+## 7. Animation system (Phase 4+)
+
+All motion uses **`motion`** (Motion 12 / Framer Motion). Spec §6 rules are strict:
+- Fade + upward translate (14px) on scroll-into-view, fires **once**
+- ≤60ms stagger across card grids (60ms = `delay={i * 0.06}`)
+- `prefers-reduced-motion`: `useReducedMotion()` disables transforms, shows content immediately
+- **Hero only**: CSS keyframe `iso-hero-enter` (defined in `globals.css`) — no JS required, no hydration flicker
+- Forbidden: bounce, spring overshoot, parallax, auto-carousels, 3D
+
+### Shared primitives (`components/ui/motion.tsx`)
+
+```tsx
+import { FadeUp, StatCounter } from '@/components/ui/motion'
+
+// Single reveal
+<FadeUp>section content</FadeUp>
+
+// Staggered grid — FadeUp wraps each grid cell with delay={i * 0.06}
+<div className="grid grid-cols-3 gap-6">
+  {items.map((item, i) => (
+    <FadeUp key={item.id} delay={i * 0.06} className="flex flex-col">
+      <Card {...item} />           // card must have flex-1 to fill wrapper
+    </FadeUp>
+  ))}
+</div>
+
+// Stat counter (count-up on scroll)
+<StatCounter value="280+" />     // parses "280" + suffix "+"
+```
+
+### Rules
+- **Server components** import `FadeUp`/`StatCounter` as client sub-components (children are serialized)
+- **Card hover lift**: CSS `hover:-translate-y-px transition-all` — no Motion needed for hover
+- All animation transitions use `REVEAL_TRANSITION` from `motion.tsx` (500ms, expo-ease-out)
+- Timing is deliberate. If a section reads clearly without motion, leave it still.
+
+---
+
+## 8. Build phases
 
 See `Isotherm_Web_Rebuild_Spec.md §11` for the full phase plan.
-This scaffold is **Phase 0**. Real pages, Sanity, and animations begin in Phase 1+.
