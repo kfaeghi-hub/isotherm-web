@@ -11,7 +11,8 @@ import { urlFor } from '@/lib/sanity/image'
 import { siteConfig } from '@/lib/siteConfig'
 import { buildMeta } from '@/lib/metadata'
 import { FadeUp, StatCounter } from '@/components/ui/motion'
-import { HeroBuildingWrapper } from '@/components/hero/HeroBuildingWrapper'
+import { HomepageCanvasWrapper } from '@/components/hero/HomepageCanvasWrapper'
+import { ENABLE_SCROLL_STORY, STORY_HEIGHT_VH } from '@/lib/scrollStoryConfig'
 import type { SiteSettings, ServiceCategory, Project } from '@/sanity.types'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,22 +23,32 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
-// Text/CTAs render immediately (SSR). 3D canvas loads async behind them.
-// Layer order: CSS grid → 3D canvas → gradient vignette → text
+//
+// When ENABLE_SCROLL_STORY = true:
+//   The hero becomes a STORY_HEIGHT_VH-tall sticky container. The 3D scene
+//   evolves as the user scrolls through it. Text + CTAs stay anchored.
+//   Content sections start after the scroll story ends.
+//
+// When ENABLE_SCROLL_STORY = false:
+//   Normal single-viewport hero. 3D rotates at a constant speed.
+//
+// Layer order inside the sticky viewport: CSS grid → 3D canvas → gradient → text.
 
 function Hero({ tagline }: { tagline: string }) {
-  return (
-    <section className="bg-navy text-white relative overflow-hidden">
+  const heroViewport = (
+    <div className="bg-navy text-white relative overflow-hidden h-screen">
 
-      {/* Layer 1: CSS blueprint grid — mobile background + 3D loading fallback */}
+      {/* Layer 1: CSS blueprint grid — mobile background + canvas loading fallback */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none iso-blueprint-bg" />
 
-      {/* Layer 2: 3D building wireframe — async load, desktop only.
-          Returns null on mobile; CSS grid is the permanent background there. */}
-      <HeroBuildingWrapper />
+      {/* Layer 2: 3D building wireframe — async, desktop only.
+          Evolves with scroll progress when ENABLE_SCROLL_STORY is true.
+          Returns null on mobile — CSS grid is the permanent background there. */}
+      <HomepageCanvasWrapper />
 
-      {/* Layer 3: Left→right gradient — maintains WCAG AA contrast on hero text.
-          Navy solid on the text side, fades toward transparent by the building. */}
+      {/* Layer 3: Left→right gradient vignette.
+          Navy solid on the text side → transparent by the building.
+          Maintains WCAG AA contrast on hero text at every scroll position. */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
@@ -48,12 +59,12 @@ function Hero({ tagline }: { tagline: string }) {
         }}
       />
 
-      {/* Layer 4: Hero text and CTAs */}
+      {/* Layer 4: Hero text — anchored to top-left of viewport throughout story */}
       <div
         className="relative mx-auto max-w-[1200px] px-6 py-24 md:py-32 lg:py-40"
         style={{ zIndex: 10 }}
       >
-        {/* iso-hero-enter: CSS keyframe fade-up, 0.55s, disabled by prefers-reduced-motion */}
+        {/* iso-hero-enter: CSS keyframe fade-up 0.55s; disabled by prefers-reduced-motion */}
         <div className="max-w-3xl iso-hero-enter">
           <p className="text-steel text-sm font-semibold uppercase tracking-widest mb-6">
             Commissioning · Engineering · Compliance
@@ -84,6 +95,78 @@ function Hero({ tagline }: { tagline: string }) {
         </div>
       </div>
 
+      {/* Steel accent line at viewport bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-steel/60 via-steel to-steel/60"
+        style={{ zIndex: 10 }}
+      />
+    </div>
+  )
+
+  // Scroll-story: wrap in a tall container; hero viewport sticks to top while scrolling
+  if (ENABLE_SCROLL_STORY) {
+    return (
+      <section
+        id="hero-scroll-wrapper"
+        aria-label="Hero"
+        style={{ height: `${STORY_HEIGHT_VH}vh` }}
+        className="relative"
+      >
+        <div className="sticky top-0">
+          {heroViewport}
+        </div>
+      </section>
+    )
+  }
+
+  // Non-story: standard hero section
+  return (
+    <section className="bg-navy text-white relative overflow-hidden">
+      {/* Blueprint grid — mobile background + loading fallback */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none iso-blueprint-bg" />
+      <HomepageCanvasWrapper />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 2,
+          background:
+            'linear-gradient(90deg, #0E2243 0%, #0E2243 18%, rgba(14,34,67,0.92) 36%, rgba(14,34,67,0.45) 62%, rgba(14,34,67,0) 100%)',
+        }}
+      />
+      <div
+        className="relative mx-auto max-w-[1200px] px-6 py-24 md:py-32 lg:py-40"
+        style={{ zIndex: 10 }}
+      >
+        <div className="max-w-3xl iso-hero-enter">
+          <p className="text-steel text-sm font-semibold uppercase tracking-widest mb-6">
+            Commissioning · Engineering · Compliance
+          </p>
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight mb-8">
+            {tagline}
+          </h1>
+          <p className="text-white/70 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl">
+            Isotherm Engineering delivers independent, technically rigorous commissioning and
+            engineering services for data centres, institutional buildings, healthcare
+            facilities, and complex mixed-use developments across Canada.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-steel text-white font-medium rounded-sm hover:bg-steel/90 transition-colors"
+            >
+              Request a Commissioning Consultation
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 px-6 py-3 border border-white/30 text-white font-medium rounded-sm hover:border-white/60 hover:bg-white/5 transition-colors"
+            >
+              Our Services
+            </Link>
+          </div>
+        </div>
+      </div>
       <div className="relative h-1 bg-gradient-to-r from-steel/60 via-steel to-steel/60" style={{ zIndex: 10 }} />
     </section>
   )
