@@ -11,6 +11,7 @@ import { urlFor } from '@/lib/sanity/image'
 import { siteConfig } from '@/lib/siteConfig'
 import { buildMeta } from '@/lib/metadata'
 import { FadeUp, StatCounter } from '@/components/ui/motion'
+import { HeroBuildingWrapper } from '@/components/hero/HeroBuildingWrapper'
 import type { SiteSettings, ServiceCategory, Project } from '@/sanity.types'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,15 +22,37 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
-// CSS animation (no JS required) so content is never hidden on SSR hydration.
+// Text/CTAs render immediately (SSR). 3D canvas loads async behind them.
+// Layer order: CSS grid → 3D canvas → gradient vignette → text
 
 function Hero({ tagline }: { tagline: string }) {
   return (
     <section className="bg-navy text-white relative overflow-hidden">
-      {/* Blueprint grid — CSS-only ambient background, behind all content */}
+
+      {/* Layer 1: CSS blueprint grid — mobile background + 3D loading fallback */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none iso-blueprint-bg" />
 
-      <div className="relative z-10 mx-auto max-w-[1200px] px-6 py-24 md:py-32 lg:py-40">
+      {/* Layer 2: 3D building wireframe — async load, desktop only.
+          Returns null on mobile; CSS grid is the permanent background there. */}
+      <HeroBuildingWrapper />
+
+      {/* Layer 3: Left→right gradient — maintains WCAG AA contrast on hero text.
+          Navy solid on the text side, fades toward transparent by the building. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 2,
+          background:
+            'linear-gradient(90deg, #0E2243 0%, #0E2243 18%, rgba(14,34,67,0.92) 36%, rgba(14,34,67,0.45) 62%, rgba(14,34,67,0) 100%)',
+        }}
+      />
+
+      {/* Layer 4: Hero text and CTAs */}
+      <div
+        className="relative mx-auto max-w-[1200px] px-6 py-24 md:py-32 lg:py-40"
+        style={{ zIndex: 10 }}
+      >
         {/* iso-hero-enter: CSS keyframe fade-up, 0.55s, disabled by prefers-reduced-motion */}
         <div className="max-w-3xl iso-hero-enter">
           <p className="text-steel text-sm font-semibold uppercase tracking-widest mb-6">
@@ -60,7 +83,8 @@ function Hero({ tagline }: { tagline: string }) {
           </div>
         </div>
       </div>
-      <div className="relative z-10 h-1 bg-gradient-to-r from-steel/60 via-steel to-steel/60" />
+
+      <div className="relative h-1 bg-gradient-to-r from-steel/60 via-steel to-steel/60" style={{ zIndex: 10 }} />
     </section>
   )
 }
