@@ -12,7 +12,7 @@
 // No other code changes are needed to toggle this flag.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const ENABLE_SCROLL_STORY = true
+export const ENABLE_SCROLL_STORY = false
 
 // Total height of the sticky hero container (viewport-heights).
 // The scroll story plays over (STORY_HEIGHT_VH - 100)vh of actual scroll.
