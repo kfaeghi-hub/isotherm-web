@@ -166,3 +166,54 @@
 @media (prefers-reduced-motion: reduce) {
   .iso-hero-enter { animation: none; }
 }
+
+/* ─── Blueprint Hero Background ───────────────────────────────────────────────
+   Dual-scale engineering grid drifting slowly behind the homepage hero.
+   Pure CSS — no JS, no images, GPU-composited transform only.
+
+   To tune intensity:
+     Raise/lower the rgba alpha values below (currently 0.10 / 0.05).
+   To tune speed:
+     Change animation-duration (120s = very slow; 40s = subtle but visible).
+   To tune density:
+     Change the gradient period (160px major / 40px fine on desktop; 80px mobile).
+   Drift amounts (-160px, -160px) equal exactly one major-grid cell —
+   the loop is perfectly seamless for both grid scales.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes iso-blueprint-drift {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(-160px, -160px); }
+}
+
+@keyframes iso-blueprint-drift-mobile {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(-80px, -80px); }
+}
+
+.iso-blueprint-bg {
+  /* GPU layer — transform only, no repaint */
+  will-change: transform;
+  animation: iso-blueprint-drift 120s linear infinite;
+  /* Major grid (160px, brighter) layered above fine grid (40px, subtler) */
+  background-image:
+    repeating-linear-gradient(0deg,  rgba(255,255,255,0.10) 0, rgba(255,255,255,0.10) 0.5px, transparent 0.5px, transparent 160px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.10) 0, rgba(255,255,255,0.10) 0.5px, transparent 0.5px, transparent 160px),
+    repeating-linear-gradient(0deg,  rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 0.5px, transparent 0.5px, transparent  40px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 0.5px, transparent 0.5px, transparent  40px);
+}
+
+/* Mobile: single 80px grid — lower render cost, slightly more visible per line */
+@media (max-width: 639px) {
+  .iso-blueprint-bg {
+    background-image:
+      repeating-linear-gradient(0deg,  rgba(255,255,255,0.07) 0, rgba(255,255,255,0.07) 0.5px, transparent 0.5px, transparent 80px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0, rgba(255,255,255,0.07) 0.5px, transparent 0.5px, transparent 80px);
+    animation-name: iso-blueprint-drift-mobile;
+  }
+}
+
+/* Freeze animation — static grid texture remains, all motion removed */
+@media (prefers-reduced-motion: reduce) {
+  .iso-blueprint-bg { animation: none; }
+}

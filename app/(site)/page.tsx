@@ -25,8 +25,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 function Hero({ tagline }: { tagline: string }) {
   return (
-    <section className="bg-navy text-white">
-      <div className="mx-auto max-w-[1200px] px-6 py-24 md:py-32 lg:py-40">
+    <section className="bg-navy text-white relative overflow-hidden">
+      {/* Blueprint grid — CSS-only ambient background, behind all content */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none iso-blueprint-bg" />
+
+      <div className="relative z-10 mx-auto max-w-[1200px] px-6 py-24 md:py-32 lg:py-40">
         {/* iso-hero-enter: CSS keyframe fade-up, 0.55s, disabled by prefers-reduced-motion */}
         <div className="max-w-3xl iso-hero-enter">
           <p className="text-steel text-sm font-semibold uppercase tracking-widest mb-6">
@@ -57,7 +60,7 @@ function Hero({ tagline }: { tagline: string }) {
           </div>
         </div>
       </div>
-      <div className="h-1 bg-gradient-to-r from-steel/60 via-steel to-steel/60" />
+      <div className="relative z-10 h-1 bg-gradient-to-r from-steel/60 via-steel to-steel/60" />
     </section>
   )
 }
